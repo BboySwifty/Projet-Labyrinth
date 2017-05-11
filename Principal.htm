@@ -35,6 +35,8 @@
 	  var TEX_CIEL = 3;
 
     var tabKeys = new Array();
+    var t;
+    var binTimer = false;
 
     function demarrer() {
        var objCanvas = document.getElementById('monCanvas');
@@ -194,13 +196,13 @@
     }
 
     function deplacementKeyDown() {
-        tabKeys[event.keyCode] = true;
-        deplacerCamera();
+      tabKeys[event.keyCode] = true;
+      t = setTimeout("deplacerCamera", Math.floor(1000/60));
     }
 
     function deplacementKeyUp() {
+        clearTimeout(t);
         tabKeys[event.keyCode] = false;
-        deplacerCamera();
     }
 
     function deplacerCamera() {
@@ -311,10 +313,9 @@
 </head>
 
 <body onload="demarrer()">
-	<canvas id="monCanvas" width="640" height="640" tabIndex="1", onkeydown="deplacementKeyDown()", onkeyup="deplacementKeyUp()">
-		Votre navigateur ne supporte pas la balise canvas
-	</canvas>
-
+  	<canvas id="monCanvas" width="640" height="640" tabIndex="1", onkeydown="deplacementKeyDown()", onkeyup="deplacementKeyUp()">
+  		Votre navigateur ne supporte pas la balise canvas
+  	</canvas>
 
 </body>
 </html>
