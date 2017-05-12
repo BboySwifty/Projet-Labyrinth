@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Projet Final par Alain Abboud, Francis Chartrand et Yacine Sahli</title>
-  
+
   <script type="text/javascript" src="WebGl.js"></script>
   <script type="text/javascript" src="ShaderCouleursTextures.js"></script>
   <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
@@ -12,9 +12,9 @@
   <script type="text/javascript" src="Camera.js"></script>
   <script type="text/javascript" src="Sol.js"></script>
   <script type="text/javascript" src="MursTroués.js"></script>
-  <script type="text/javascript" src="Creneaux.js"></script>   
-  <script type="text/javascript" src="Tunnels.js"></script>  
-  <script type="text/javascript" src="Ciel.js"></script>   
+  <script type="text/javascript" src="Creneaux.js"></script>
+  <script type="text/javascript" src="Tunnels.js"></script>
+  <script type="text/javascript" src="Ciel.js"></script>
   <script type="text/javascript" src="Textures.js"></script>
     <script type="text/javascript" src="Cube.js"></script>
   <script type="text/javascript">
@@ -27,27 +27,30 @@
 	 var OBJ3D_MURS = 1;
 	 var OBJ3D_CRENEAUX = 2;
 	 var OBJ3D_TUNNELS = 3;
-	 var OBJ3D_CIEL = 4; 
-	 
+	 var OBJ3D_CIEL = 4;
+
 	 var tabImages = ['Transparent.gif', 'gazon3.png', 'mur2.png', 'Ciel.jpg'];
 	 var TEX_TRANSPARENT = 0;
 	 var TEX_SOL = 1;
 	 var TEX_MUR = 2;
 	 var TEX_CIEL = 3;
 
-     
+   var tabKeys = new Array();
+   var binMouvement = false;
+   var intVitesse = 0.4;
+
     function demarrer() {
        var objCanvas = document.getElementById('monCanvas');
        objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
        objProgShaders = initShaders(objgl);
        objScene3D = initScene3D(objgl); // Créer la scène
 
-       effacerCanevas(objgl); 
+       effacerCanevas(objgl);
        dessiner(objgl, objProgShaders, objScene3D);
 
-       
+
    }
-   
+
      function initScene3D(objgl) {
          var objScene3D = new Object();
          var tabObjets3D = new Array();
@@ -110,9 +113,9 @@
                      objet3D.transformations = creerTransformations();
                      setPositionsXYZ([j - 15, 1, i], objet3D.transformations);
                      console.log(j - 15 + " et " + i);
-                     
+
                      tabObjets3D.push(objet3D);
-         */            
+         */
                  }
              }
          }
@@ -143,7 +146,7 @@
 		 // Créer le ciel
          var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
         tabObjets3D.push(obj3DCiel);
-		 
+
 		 // Mettre les objets 3D sur la scène
          objScene3D.tabObjets3D = tabObjets3D;
 
@@ -176,8 +179,8 @@
              var maillage = objScene3D.tabObjets3D[i].maillage;
              var transformations = objScene3D.tabObjets3D[i].transformations;
 
-             // Matrice du modèle     
-             
+             // Matrice du modèle
+
              var matModeleVue = mat4.create();
              mat4.identity(matModeleVue);
 
@@ -189,8 +192,8 @@
                          getCiblesCameraXYZ(objScene3D.camera),
                          getOrientationsXYZ(objScene3D.camera),
                          matModeleVue);
-                         
-             // Appliquer les transformations sur le modèle 
+
+             // Appliquer les transformations sur le modèle
              mat4.translate(matModeleVue, getPositionsXYZ(transformations));
              mat4.scale(matModeleVue, getEchellesXYZ(transformations));
              mat4.rotateX(matModeleVue, getAngleX(transformations) * Math.PI / 180);
@@ -221,7 +224,7 @@
                      objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
                      objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
 
-                     // Relier le no de texture et le taux de couleur aux shaders                 
+                     // Relier le no de texture et le taux de couleur aux shaders
                      objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
                      objgl.uniform1f(objProgShaders.pcCouleurTexel, texels[j].pcCouleurTexel);
 
@@ -246,7 +249,7 @@
                  objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
                  objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
 
-                 // Relier le no de texture et le taux de couleur aux shaders                 
+                 // Relier le no de texture et le taux de couleur aux shaders
                  objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
                  objgl.uniform1f(objProgShaders.pcCouleurTexel, texels.pcCouleurTexel);
 
@@ -268,30 +271,44 @@
       objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
     }
 
+    function deplacementKeyDown(){
+      tabKeys[event.keyCode] = true; // index = keyCode du bouton et true = keydown
+      if(!binMouvement){
+        deplacerCamera();
+      }
+    }
+
+    function deplacementKeyUp(){
+      tabKeys[event.keyCode] = false; // false = keyup
+      binMouvement = false;
+      clearTimeout(deplacerCamera);
+    }
+
     function deplacerCamera() {
          var camera = objScene3D.camera;
+         binMouvement = true;
 
-         if (event.keyCode == 37 || event.keyCode == 39) {
+         if (tabKeys[37] || tabKeys[39]) {
              // 37:  Flèche-à-gauche; 39:Flèche-à-droite
              var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
              var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-             var intDirection = (event.keyCode == 37) ? -1 : 1;
-             var fltAngle = intDirection * Math.PI / 90; // Tourner 2 degrés
+             var intDirection = (tabKeys[37]) ? -1 : 1;
+             var fltAngle = intDirection * Math.PI / 135; // Tourner 1.5 degrés
              var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
              var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
              setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
              setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
          }
          else
-             if (event.keyCode == 38 || event.keyCode == 40) {
+             if (tabKeys[38] || tabKeys[40]) {
                  // 38:  Flèche-en-haut; 40:Flèche-en-bas
                  var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
                  var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
                  var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
-                 var intDirection = (event.keyCode == 38) ? 1 : -1;
+                 var intDirection = (tabKeys[38]) ? 1 : -1;
 
-                 var fltXPrime = intDirection * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
-                 var fltZPrime = intDirection * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
+                 var fltXPrime = intDirection * intVitesse * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
+                 var fltZPrime = intDirection * intVitesse * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
 
                  // Positions de la caméra
                  var fltXCamera = getPositionX(camera) + fltXPrime;
@@ -336,7 +353,7 @@
                          binAucuneCollision = (fltZCamera > fltLimiteNord2) && (fltZCamera < fltLimiteSud2);
                      }
                  }
-                 
+
                  // Déplacer la caméra s'il n'y a pas de collision
                  if (binAucuneCollision) {
                      setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
@@ -346,11 +363,11 @@
                  }
                  else { // Pour longer les murs s'il y a une collision
                      if (fltXCamera <= fltLimiteOuest || fltXCamera >= fltLimiteEst) {
-                         // On longe le mur ouest ou est 
-                         fltZPrime = 0.2 * ((fltZ < 0) ? -1 : 1); fltXPrime = 0.0;
+                         // On longe le mur ouest ou est
+                         fltZPrime = intVitesse * 0.2 * ((fltZ < 0) ? -1 : 1); fltXPrime = 0.0;
                      }
                      else { // On longe le mur sud ou nord
-                         fltXPrime = 0.2 * ((fltX < 0) ? -1 : 1); fltZPrime = 0.0;
+                         fltXPrime = intVitesse * 0.2 * ((fltX < 0) ? -1 : 1); fltZPrime = 0.0;
                      }
 
                      // Nouvelles positions de la caméra
@@ -367,18 +384,21 @@
                      }
                  }
              }
+        effacerCanevas(objgl);
+        dessiner(objgl, objProgShaders, objScene3D);
 
-         effacerCanevas(objgl);
-         dessiner(objgl, objProgShaders, objScene3D);
+        setTimeout(deplacerCamera, 10);
      }
-  
+
 </script>
 </head>
 
-<body onload="demarrer()"> 
-	<canvas id="monCanvas" width="640" height="640" tabIndex="1", onkeydown="deplacerCamera(); return false">
-		Votre navigateur ne supporte pas la balise canvas
-	</canvas>
+<body onload="demarrer()">
+  <p align="center">
+  	<canvas id="monCanvas" width="640" height="640" tabIndex="1", onkeydown="deplacementKeyDown()" onkeyup="deplacementKeyUp()">
+  		Votre navigateur ne supporte pas la balise canvas
+  	</canvas>
+  </p>
 
 
 </body>
