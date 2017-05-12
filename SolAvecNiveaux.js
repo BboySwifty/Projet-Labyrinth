@@ -1,8 +1,9 @@
 
-function creerObj3DSol(objgl, intNoTexture) {
+function creerObj3DSol(objgl, intNoTexture, intNiveau) {
+	
     var obj3DSol = new Object();
-    obj3DSol.fltProfondeur = 31;
-    obj3DSol.fltLargeur = 31;
+    obj3DSol.fltProfondeur = 25 - intNiveau;
+    obj3DSol.fltLargeur = 25 - intNiveau;
     obj3DSol.fltHauteur = 0;
     
     obj3DSol.vertex = creerVertexSol(objgl, obj3DSol.fltLargeur, obj3DSol.fltProfondeur);
@@ -37,8 +38,8 @@ function creerCouleursSol(objgl, tabCouleur) {
     var objCouleursSol = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursSol);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
- 
-	return objCouleursSol;
+  
+    return objCouleursSol;
 }
 
 function creerTexelsSol(objgl, fltLargeur, fltProfondeur, intNoTexture) {
@@ -52,7 +53,7 @@ function creerTexelsSol(objgl, fltLargeur, fltProfondeur, intNoTexture) {
     var objTexelsSol = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsSol);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
-
+    
     objTexelsSol.intNoTexture = intNoTexture; objTexelsSol.pcCouleurTexel = 1.0;
     
     return objTexelsSol;
