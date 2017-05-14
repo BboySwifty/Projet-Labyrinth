@@ -1,27 +1,28 @@
 
-function creerObj3DSol(objgl, intNoTexture) {
+function creerObj3DSol(objgl, intNoTexture, intNiveau) {
+	
     var obj3DSol = new Object();
-    obj3DSol.fltProfondeur = 31;
-    obj3DSol.fltLargeur = 31;
+    obj3DSol.fltProfondeur = 25 - intNiveau;
+    obj3DSol.fltLargeur = 25 - intNiveau;
     obj3DSol.fltHauteur = 0;
-
+    
     obj3DSol.vertex = creerVertexSol(objgl, obj3DSol.fltLargeur, obj3DSol.fltProfondeur);
     obj3DSol.couleurs = creerCouleursSol(objgl, [1, 1, 1, 1]);
 	obj3DSol.texels = creerTexelsSol(objgl, obj3DSol.fltLargeur, obj3DSol.fltProfondeur, intNoTexture);
 	obj3DSol.maillage = creerMaillageSol(objgl);
-
+	
     obj3DSol.transformations = creerTransformations();
     return obj3DSol;
 }
 
 function creerVertexSol(objgl, fltLargeur, fltProfondeur) {
     var tabVertex = [
-             0.0, 0.0, 0.0,
-             fltLargeur / 2, 0.0, 0.0,
-             0.0, 0.0, fltProfondeur / 2,
+             -fltLargeur / 2, 0.0, -fltProfondeur / 2,
+             fltLargeur / 2, 0.0, -fltProfondeur / 2,
+             -fltLargeur / 2, 0.0, fltProfondeur / 2,
              fltLargeur / 2, 0.0, fltProfondeur / 2
         ];
-
+    
     var objSol = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objSol);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
@@ -30,15 +31,15 @@ function creerVertexSol(objgl, fltLargeur, fltProfondeur) {
 }
 
 function creerCouleursSol(objgl, tabCouleur) {
-    tabCouleurs = [];
+    tabCouleurs = []; 
     for (var i = 0; i < 4; i++)
         tabCouleurs = tabCouleurs.concat(tabCouleur);
 
     var objCouleursSol = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursSol);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
-
-	return objCouleursSol;
+  
+    return objCouleursSol;
 }
 
 function creerTexelsSol(objgl, fltLargeur, fltProfondeur, intNoTexture) {
@@ -48,13 +49,13 @@ function creerTexelsSol(objgl, fltLargeur, fltProfondeur, intNoTexture) {
              0.0, fltProfondeur,
              fltLargeur, fltProfondeur
         ];
-
+    
     var objTexelsSol = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsSol);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
-
+    
     objTexelsSol.intNoTexture = intNoTexture; objTexelsSol.pcCouleurTexel = 1.0;
-
+    
     return objTexelsSol;
   }
 
@@ -74,6 +75,8 @@ function creerMaillageSol(objgl) {
         objMaillageSol.intNbTriangles = 2;
         // Le nombre de droites
         objMaillageSol.intNbDroites = 0;
-
+		
         return objMaillageSol;
     }
+  
+  

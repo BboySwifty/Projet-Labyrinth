@@ -1,6 +1,6 @@
 // Ciel.js
 
-function creerObj3DCiel(objgl, obj3DMurs, obj3DCreneaux, intNoTexture) {
+function creerObj3DCiel(objgl, obj3DMurs, intNoTexture) {
     var obj3DCiel = new Object();
     obj3DCiel.fltProfondeur = obj3DMurs.fltProfondeur * 2;
     obj3DCiel.fltLargeur = obj3DMurs.fltLargeur * 2;
@@ -12,7 +12,7 @@ function creerObj3DCiel(objgl, obj3DMurs, obj3DCreneaux, intNoTexture) {
 	obj3DCiel.maillage = creerMaillageCiel(objgl);
 	
     obj3DCiel.transformations = creerTransformations();
-	setPositionY(obj3DMurs.fltHauteur + obj3DCreneaux.fltHauteur, obj3DCiel.transformations);
+	setPositionY(obj3DMurs.fltHauteur , obj3DCiel.transformations);
     return obj3DCiel;
 }
 
