@@ -3,28 +3,52 @@ var TEX_TRANSPARENT = 0
 var TEX_METAL = 1
 var TEX_WEBGL = 2;
 
+function creerObj3DNiveau(objgl, intNoTexture) {
+    var obj3DNiveau = new Object();
+    obj3DNiveau.fltProfondeur = 1;
+    obj3DNiveau.fltLargeur = 1;
+    obj3DNiveau.fltHauteur = 2;
+
+    obj3DNiveau.vertex = creerCube(objgl);
+    obj3DNiveau.couleurs = creerCouleursCube(objgl);
+    obj3DNiveau.maillage = creerMaillageCube(objgl);
+    obj3DNiveau.texels = creerTexelsCube(objgl);
+
+    obj3DNiveau.transformations = creerTransformations();
+    setPositionsXYZ([j, 1, i], objet3D.transformations);
+    tabObjets3D.push(objet3D);
+
+    obj3DMurs.vertex = creerVertexMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
+    obj3DMurs.couleurs = creerCouleursMurs(objgl, [1, 1, 1, 1]);
+  	obj3DMurs.texels = creerTexelsMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
+  	obj3DMurs.maillage = creerMaillageMurs(objgl);
+
+    obj3DMurs.transformations = creerTransformations();
+    return obj3DMurs;
+}
+
 function creerCube(objgl) {
     var objCube = objgl.createBuffer();
 
     tabVertex = [
          // Face avant (Z=1)
-          0.0, 0.0, 0.5,   // 0: Centre
-          0.5, 1, 0.5,   // 1: Coin haut droit
-          0.5, -1, 0.5,  // 2: Coin bas droit
-         -0.5, -1, 0.5,  // 3: Coin bas gauche
-          -0.5, 1, 0.5,  // 4: Coin haut gauche
+          0.5, 0.0, 1.0,   // 0: Centre
+          1.0, 1.0, 1.0,   // 1: Coin haut droit
+          1.0, -1.0, 1.0,  // 2: Coin bas droit
+          0.0, -1.0, 1.0,  // 3: Coin bas gauche
+          0.0, 1.0, 1.0,  // 4: Coin haut gauche
 
           // Face arri�re (Z=-1)
-          0.0, 0.0, -0.5,   // 5: Centre
-          0.5, 1, -0.5,   // 6: Coin haut droit
-          0.5, -1, -0.5,  // 7: Coin bas droit
-         -0.5, -1, -0.5,  // 8: Coin bas gauche
-          -0.5, 1, -0.5,  // 9: Coin haut gauche
+          0.5, 0.0, 0.0,   // 5: Centre
+          1.0, 1.0, 0.0,   // 6: Coin haut droit
+          1.0, -1.0, 0.0,  // 7: Coin bas droit
+          0.0, -1.0, 0.0,  // 8: Coin bas gauche
+          0.0, 1.0, 0.0,  // 9: Coin haut gauche
 
-           0.5, 0.0, 0.0,   //10: Centre de droite
-           -0.5, 0.0, 0.0,  //11: Centre de gauche
-           0.0, 0.5, 0.0,   //12: Centre de dessus
-           0.0, -0.5, 0.0   //13: Centre de dessous
+           1.0, 0.0, 0.5,   //10: Centre de droite
+           0.0, 0.0, 0.5,  //11: Centre de gauche
+           0.5, 1.0, 0.5,   //12: Centre de dessus
+           0.5, -1.0, 0.5   //13: Centre de dessous
 
     ];
 
@@ -63,23 +87,23 @@ function creerTexelsCube(objgl) {
     var objTexelsCube = objgl.createBuffer();
 
     tabTexels = [  // Texels de la face avant
-                      0.5, 0.5,  // 0: Centre
-                      1.0, 0.0,  // 1: Coin haut droit
-                      1.0, 1.0,  // 2: Coin bas droit
-                      0.0, 1.0,  // 3: Coin bas gauche
-                      0.0, 0.0,  // 4: Coin haut gauche
+                      0.5, 1.0,  // 0: Centre
+                      0.0, 0.0,  // 1: Coin haut droit
+                      0.0, 2.0,  // 2: Coin bas droit
+                      2.0, 2.0,  // 3: Coin bas gauche
+                      2.0, 0.0,  // 4: Coin haut gauche
 
                       // Texels de la face arri�re
-                      0.5, 0.5,   // 5: Centre
+                      1.0, 1.0,   // 5: Centre
                       0.0, 0.0,   // 6: Coin haut droit
-                      0.0, 1.0,   // 7: Coin bas droit
-                      1.0, 1.0,   // 8: Coin bas gauche
-                      1.0, 0.0,    // 9: Coin haut gauche
+                      0.0, 2.0,   // 7: Coin bas droit
+                      2.0, 2.0,   // 8: Coin bas gauche
+                      2.0, 0.0,    // 9: Coin haut gauche
 
-                     0.5, 0.5,   //10: Centre de droite
-                     0.5, 0.5,  //11: Centre de gauche
-                     0.5, 0.5,    //12: Centre de dessus
-                     0.5, 0.5   //13: Centre de dessous
+                      1.0, 1.0,   //10: Centre de droite
+                      1.0, 1.0,  //11: Centre de gauche
+                      1.0, 1.0,    //12: Centre de dessus
+                      1.0, 1.0  //13: Centre de dessous
 
     ];
 

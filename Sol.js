@@ -17,9 +17,9 @@ function creerObj3DSol(objgl, intNoTexture) {
 function creerVertexSol(objgl, fltLargeur, fltProfondeur) {
     var tabVertex = [
              0.0, 0.0, 0.0,
-             fltLargeur / 2, 0.0, 0.0,
-             0.0, 0.0, fltProfondeur / 2,
-             fltLargeur / 2, 0.0, fltProfondeur / 2
+             fltLargeur, 0.0, 0.0,
+             0.0, 0.0, fltProfondeur,
+             fltLargeur, 0.0, fltProfondeur
         ];
 
     var objSol = objgl.createBuffer();

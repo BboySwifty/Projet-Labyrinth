@@ -7,8 +7,8 @@ function creerObj3DMurs(objgl, obj3DSol, intNoTexture) {
 
     obj3DMurs.vertex = creerVertexMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
     obj3DMurs.couleurs = creerCouleursMurs(objgl, [1, 1, 1, 1]);
-	obj3DMurs.texels = creerTexelsMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
-	obj3DMurs.maillage = creerMaillageMurs(objgl);
+  	obj3DMurs.texels = creerTexelsMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
+  	obj3DMurs.maillage = creerMaillageMurs(objgl);
 
     obj3DMurs.transformations = creerTransformations();
     return obj3DMurs;
@@ -18,23 +18,23 @@ function creerVertexMurs(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
 	          // Mur nord
              0, fltHauteur, 0,
-             fltLargeur / 2, fltHauteur, 0,
+             fltLargeur, fltHauteur, 0,
              0, 0, 0,
-             fltLargeur / 2, 0, 0,
+             fltLargeur, 0, 0,
 			 // Mur sud
-			 fltLargeur / 2, fltHauteur, fltProfondeur / 2,
-             0, fltHauteur, fltProfondeur / 2,
-             fltLargeur / 2, 0, fltProfondeur / 2,
-             0, 0, fltProfondeur / 2,
+			       fltLargeur, fltHauteur, fltProfondeur,
+             0, fltHauteur, fltProfondeur,
+             fltLargeur, 0, fltProfondeur,
+             0, 0, fltProfondeur,
 			 // Mur est
-             fltLargeur / 2, fltHauteur, 0,
-             fltLargeur / 2, fltHauteur, fltProfondeur / 2,
-             fltLargeur / 2, 0, 0,
-             fltLargeur / 2, 0, fltProfondeur / 2,
+             fltLargeur, fltHauteur, 0,
+             fltLargeur, fltHauteur, fltProfondeur,
+             fltLargeur, 0, 0,
+             fltLargeur, 0, fltProfondeur,
  			 // Mur ouest
-             0, fltHauteur, fltProfondeur / 2,
+             0, fltHauteur, fltProfondeur,
              0, fltHauteur, 0,
-             0, 0, fltProfondeur / 2,
+             0, 0, fltProfondeur,
              0, 0, 0
         ];
 

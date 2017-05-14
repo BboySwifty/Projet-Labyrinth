@@ -11,12 +11,10 @@
   <script type="text/javascript" src="Transformations.js"></script>
   <script type="text/javascript" src="Camera.js"></script>
   <script type="text/javascript" src="Sol.js"></script>
-  <script type="text/javascript" src="MursTroués.js"></script>
-  <script type="text/javascript" src="Creneaux.js"></script>
-  <script type="text/javascript" src="Tunnels.js"></script>
+  <script type="text/javascript" src="Murs.js"></script>
   <script type="text/javascript" src="Ciel.js"></script>
   <script type="text/javascript" src="Textures.js"></script>
-    <script type="text/javascript" src="Cube.js"></script>
+    <script type="text/javascript" src="Niveau.js"></script>
   <script type="text/javascript">
 
      var objgl = null;
@@ -65,59 +63,38 @@
          }
 
          tabNiveau = [
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'N', 'N', 'F', 'N', 'N', 'N', 'N', 'N', 'N', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'N', 'N', 'F', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F'],
-                   ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F']
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
          ];
-         for (var i = 0; i < 31; i++) {
-             for (var j = 0; j < 31; j++) {
-                 //Briques
-                 if (tabNiveau[i][j] == 'N') {
-                     // Créer 1 cube
-
-                     /*var objet3D = new Object();
-                     objet3D.vertex = creerCube(objgl);
-                     objet3D.couleurs = creerCouleursCube(objgl);
-                     objet3D.maillage = creerMaillageCube(objgl);
-                     objet3D.texels = creerTexelsCube(objgl);
-                     objet3D.transformations = creerTransformations();
-                     setPositionsXYZ([j - 15, 1, i], objet3D.transformations);
-                     console.log(j - 15 + " et " + i);
-
-                     tabObjets3D.push(objet3D);*/
-
-                 }
-             }
-         }
-
 
          // Mettre les objets 3D sur la scène
          objScene3D.tabObjets3D = tabObjets3D;
@@ -130,23 +107,27 @@
          var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
          tabObjets3D.push(obj3DMurs);
 
-         // Créer les tunnels
-         var obj3DTunnels = creerObj3DTunnels(objgl, obj3DMurs, TEX_MUR);
-         tabObjets3D.push(obj3DTunnels);
-
 		 // Créer le ciel
-      /*   var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-        tabObjets3D.push(obj3DCiel);*/
+         var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+         tabObjets3D.push(obj3DCiel);
 
-        for(var i = 0; i < 8; i++){
-          var objet3D = new Object();
-          objet3D.vertex = creerCube(objgl);
-          objet3D.couleurs = creerCouleursCube(objgl);
-          objet3D.maillage = creerMaillageCube(objgl);
-          objet3D.texels = creerTexelsCube(objgl);
-          objet3D.transformations = creerTransformations();
-          setPositionsXYZ([0, 1, i], objet3D.transformations);
-          tabObjets3D.push(objet3D);
+        for (var i = 0; i < 31; i++) {
+            for (var j = 0; j < 31; j++) {
+                //Briques
+                if (tabNiveau[i][j] == 1) {
+                    // Créer 1 cube
+
+                    var objet3D = new Object();
+                    objet3D.vertex = creerCube(objgl);
+                    objet3D.couleurs = creerCouleursCube(objgl);
+                    objet3D.maillage = creerMaillageCube(objgl);
+                    objet3D.texels = creerTexelsCube(objgl);
+                    objet3D.transformations = creerTransformations();
+                    setPositionsXYZ([j, 1, i], objet3D.transformations);
+                    tabObjets3D.push(objet3D);
+
+                }
+            }
         }
 
 		 // Mettre les objets 3D sur la scène
@@ -154,8 +135,8 @@
 
          // La caméra
          var camera = creerCamera();
-         setPositionsCameraXYZ([6, 0.5, 0.1], camera);
-         setCiblesCameraXYZ([0, 0.5, 0], camera);
+         setPositionsCameraXYZ([6, 0.5, 6], camera);
+         setCiblesCameraXYZ([3, 0.5, 3], camera);
          setOrientationsXYZ([0, 1, 0], camera);
          objScene3D.camera = camera;
 
@@ -187,7 +168,7 @@
              mat4.identity(matModeleVue);
 
       //     Cette ligne est pour la vue aérienne du dédale
-            // mat4.lookAt([0, 39, 0], [0, 0, 0], [0, 0, 1], matModeleVue);
+             //mat4.lookAt([15.5, 39, 15.5], [15.5, 0, 15.5], [0, 0, 1], matModeleVue);
 
              // Placer la caméra sur la scène
              mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
@@ -317,44 +298,14 @@
                  var fltZCamera = getPositionZ(camera) + fltZPrime;
 
                  // Limites du mur
-                 var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 + 0.1;
-                 var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 - 0.1;
-                 var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 + 0.1;
-                 var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 - 0.1;
+                 var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur + 0.1;
+                 var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur - 0.1;
+                 var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
+                 var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur - 0.1;
 
                  var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
                                           (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
 
-                 if (!binAucuneCollision) {
-                     // Vérifier si le mur NORD est troué
-                     if ((fltZCamera <= fltLimiteNord) && objScene3D.tabObjets3D[OBJ3D_MURS].tabAUntrou[NORD]) {
-                         // Vérifier s'il est devant le trou du mur NORD
-                         var fltLimiteOuest2 = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur * (-1 / 2 + objScene3D.tabObjets3D[OBJ3D_MURS].tabDebutRelTrou[NORD]) + 0.1;
-                         var fltLimiteEst2 = fltLimiteOuest2 + objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeurTrou - 0.2;
-                         binAucuneCollision = (fltXCamera > fltLimiteOuest2) && (fltXCamera < fltLimiteEst2);
-                     }
-                         // Vérifier si le mur SUD est troué
-                     else if ((fltZCamera >= fltLimiteSud) && objScene3D.tabObjets3D[OBJ3D_MURS].tabAUntrou[SUD]) {
-                         // Vérifier s'il est devant le trou du mur SUD
-                         var fltLimiteEst2 = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur * (1 / 2 - objScene3D.tabObjets3D[OBJ3D_MURS].tabDebutRelTrou[SUD]) - 0.1;
-                         var fltLimiteOuest2 = fltLimiteEst2 - objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeurTrou + 0.2;
-                         binAucuneCollision = (fltXCamera > fltLimiteOuest2) && (fltXCamera < fltLimiteEst2);
-                     }
-                         // Vérifier si le mur EST est troué
-                     else if ((fltXCamera >= fltLimiteEst) && objScene3D.tabObjets3D[OBJ3D_MURS].tabAUntrou[EST]) {
-                         // Vérifier s'il est devant le trou du mur EST
-                         var fltLimiteNord2 = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur * (-1 / 2 + objScene3D.tabObjets3D[OBJ3D_MURS].tabDebutRelTrou[EST]) + 0.1;
-                         var fltLimiteSud2 = fltLimiteNord2 + objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeurTrou - 0.2;
-                         binAucuneCollision = (fltZCamera > fltLimiteNord2) && (fltZCamera < fltLimiteSud2);
-                     }
-                         // Vérifier si le mur OUEST est troué
-                     else if ((fltXCamera <= fltLimiteOuest) && objScene3D.tabObjets3D[OBJ3D_MURS].tabAUntrou[OUEST]) {
-                         // Vérifier s'il est devant le trou du mur OUEST
-                         var fltLimiteSud2 = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur * (1 / 2 - objScene3D.tabObjets3D[OBJ3D_MURS].tabDebutRelTrou[OUEST]) - 0.1;
-                         var fltLimiteNord2 = fltLimiteSud2 - objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeurTrou + 0.2;
-                         binAucuneCollision = (fltZCamera > fltLimiteNord2) && (fltZCamera < fltLimiteSud2);
-                     }
-                 }
 
                  // Déplacer la caméra s'il n'y a pas de collision
                  if (binAucuneCollision) {
