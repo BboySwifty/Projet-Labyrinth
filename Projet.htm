@@ -271,9 +271,9 @@
     }
 
     function deplacementKeyUp(){
+      clearTimeout(t);
       tabKeys[event.keyCode] = false; // false = keyup
       binMouvement = false;
-      clearTimeout(deplacerCamera);
     }
 
     function deplacerCamera() {
@@ -349,7 +349,7 @@
         effacerCanevas(objgl);
         dessiner(objgl, objProgShaders, objScene3D);
 
-        setTimeout(deplacerCamera, 10);
+        t = setTimeout(deplacerCamera, 10);
      }
 
 </script>
