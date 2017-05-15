@@ -1,6 +1,6 @@
 //Cube.js
 var TEX_TRANSPARENT = 0
-var TEX_METAL = 1
+var TEX_METAL = 1;
 var TEX_WEBGL = 2;
 
 function creerObj3DNiveau(objgl, intNoTexture) {
