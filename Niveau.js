@@ -87,21 +87,21 @@ function creerTexelsCube(objgl) {
     var objTexelsCube = objgl.createBuffer();
 
     tabTexels = [  // Texels de la face avant
-                      0.5, 1.0,  // 0: Centre
+                      0.5, 0.5,  // 0: Centre
                       1.0, 0.0,  // 1: Coin haut droit
-                      1.0, 2.0,  // 2: Coin bas droit
-                      0.0, 2.0,  // 3: Coin bas gauche
+                      1.0, 1.0,  // 2: Coin bas droit
+                      0.0, 1.0,  // 3: Coin bas gauche
                       0.0, 0.0,  // 4: Coin haut gauche
 
                       // Texels de la face arri�re
-                      0.5, 1.0,  // 5: Centre
+                      0.5, 0.5,  // 5: Centre
                       0.0, 0.0,  // 6: Coin haut droit
-                      0.0, 2.0,  // 7: Coin bas droit
-                      1.0, 2.0,  // 8: Coin bas gauche
+                      0.0, 1.0,  // 7: Coin bas droit
+                      1.0, 1.0,  // 8: Coin bas gauche
                       1.0, 0.0,  // 9: Coin haut gauche
 
-                      0.5, 1.0,   //10: Centre de droite
-                      0.5, 1.0,  //11: Centre de gauche
+                      0.5, 0.5,   //10: Centre de droite
+                      0.5, 0.5,  //11: Centre de gauche
                     // 0.5, 0.5,    //12: Centre de dessus
                     // 0.5, 0.5  //13: Centre de dessous
 
