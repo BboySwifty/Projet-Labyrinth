@@ -27,7 +27,7 @@
 	 var OBJ3D_TUNNELS = 3;
 	 var OBJ3D_CIEL = 4;
 
-	 var tabImages = ['Transparent.gif', 'gazon3.png', 'mur2.png', 'Ciel.jpg'];
+	 var tabImages = ['Transparent.gif', 'lava0003.png', 'lavawall.jpg', 'Ciel.jpg'];
 	 var TEX_TRANSPARENT = 0;
 	 var TEX_SOL = 1;
 	 var TEX_MUR = 2;
@@ -35,7 +35,7 @@
 
    var tabKeys = new Array();
    var binMouvement = false;
-   var intVitesse = 0.3;
+   var intVitesse = 0.5;
    var t = null;
 
     function demarrer() {
@@ -280,7 +280,7 @@
              var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
              var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
              var intDirection = (tabKeys[37]) ? -1 : 1;
-             var fltAngle = intDirection * Math.PI / 135; // Tourner 1.5 degrés
+             var fltAngle = intDirection * Math.PI / 75; // Tourner 1.5 degrés
              var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
              var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
              setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);

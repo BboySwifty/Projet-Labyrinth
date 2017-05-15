@@ -47,8 +47,8 @@ function creerCube(objgl) {
 
            1.0, 0.0, 0.5,   //10: Centre de droite
            0.0, 0.0, 0.5,  //11: Centre de gauche
-           0.5, 1.0, 0.5,   //12: Centre de dessus
-           0.5, -1.0, 0.5   //13: Centre de dessous
+          // 0.5, 1.0, 0.5,   //12: Centre de dessus
+          // 0.5, -1.0, 0.5   //13: Centre de dessous
 
     ];
 
@@ -102,8 +102,8 @@ function creerTexelsCube(objgl) {
 
                       0.5, 1.0,   //10: Centre de droite
                       0.5, 1.0,  //11: Centre de gauche
-                      0.5, 0.5,    //12: Centre de dessus
-                      0.5, 0.5  //13: Centre de dessous
+                    // 0.5, 0.5,    //12: Centre de dessus
+                    // 0.5, 0.5  //13: Centre de dessous
 
     ];
 
@@ -143,22 +143,17 @@ function creerMaillageCube(objgl) {
          11, 8, 3,
          11, 3, 4,
 
-         12, 1, 6,
+        /* 12, 1, 6,
          12, 6, 9,
          12, 9, 4,
-         12, 4, 1,
-
-         13, 2, 7,
-         13, 7, 8,
-         13, 8, 3,
-         13, 3, 2
+         12, 4, 1,*/
         ];
 
     objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageCube);
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillageCube), objgl.STATIC_DRAW);
 
     // Le nombre de triangles
-    objMaillageCube.intNbTriangles = 24;
+    objMaillageCube.intNbTriangles = 16;
     // Le nombre de droites
     objMaillageCube.intNbDroites = 0;
 
