@@ -109,8 +109,8 @@
          tabObjets3D.push(obj3DMurs);
 
 		     // Créer le ciel
-         /*var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-         tabObjets3D.push(obj3DCiel);*/
+         var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+         tabObjets3D.push(obj3DCiel);
 
         for (var i = 0; i < 31; i++) {
             for (var j = 0; j < 31; j++) {
@@ -139,6 +139,12 @@
          setPositionsCameraXYZ([6, 0.5, 6], camera);
          setCiblesCameraXYZ([3, 0.5, 3], camera);
          setOrientationsXYZ([0, 1, 0], camera);
+
+         // Vue aérienne
+         /*setPositionsCameraXYZ([15.5, 39, 15.5], camera);
+         setCiblesCameraXYZ([15.5, 0, 15.5], camera);
+         setOrientationsXYZ([0, 0, 1], camera);*/
+
          objScene3D.camera = camera;
 
          return objScene3D;
@@ -168,14 +174,11 @@
              var matModeleVue = mat4.create();
              mat4.identity(matModeleVue);
 
-      //     Cette ligne est pour la vue aérienne du dédale
-             mat4.lookAt([15.5, 39, 15.5], [15.5, 0, 15.5], [0, 0, 1], matModeleVue);
-
              // Placer la caméra sur la scène
-             /*mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
+             mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
                          getCiblesCameraXYZ(objScene3D.camera),
                          getOrientationsXYZ(objScene3D.camera),
-                         matModeleVue);*/
+                         matModeleVue);
 
              // Appliquer les transformations sur le modèle
              mat4.translate(matModeleVue, getPositionsXYZ(transformations));
