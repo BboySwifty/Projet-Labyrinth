@@ -1,5 +1,5 @@
-﻿
-function creerObj3DMurs(objgl, obj3DSol, intNoTexture, positionX, positionZ) {
+
+function creerObj3DMurs(objgl, obj3DSol, intNoTexture,positionX,positionZ) {
     var obj3DMurs = new Object();
     obj3DMurs.fltProfondeur = 1;
     obj3DMurs.fltLargeur = 1;
@@ -7,32 +7,32 @@ function creerObj3DMurs(objgl, obj3DSol, intNoTexture, positionX, positionZ) {
 
     obj3DMurs.vertex = creerVertexMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
     obj3DMurs.couleurs = creerCouleursMurs(objgl, [1, 1, 1, 1]);
-    obj3DMurs.texels = creerTexelsMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
-    obj3DMurs.maillage = creerMaillageMurs(objgl);
+  	obj3DMurs.texels = creerTexelsMurs(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
+  	obj3DMurs.maillage = creerMaillageMurs(objgl);
 
-    obj3DMurs.transformations = creerTransformations();
-    setPositionsXYZ([positionX, 0, positionZ], obj3DMurs.transformations);
+  	obj3DMurs.transformations = creerTransformations();
+  	setPositionsXYZ([positionX, 0, positionZ], obj3DMurs.transformations);
     return obj3DMurs;
 }
 
 function creerVertexMurs(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
-    // Mur nord
+	          // Mur nord
              0, fltHauteur, 0,
              fltLargeur, fltHauteur, 0,
              0, 0, 0,
              fltLargeur, 0, 0,
-    // Mur sud
+			 // Mur sud
 			       fltLargeur, fltHauteur, fltProfondeur,
              0, fltHauteur, fltProfondeur,
              fltLargeur, 0, fltProfondeur,
              0, 0, fltProfondeur,
-    // Mur est
+			 // Mur est
              fltLargeur, fltHauteur, 0,
              fltLargeur, fltHauteur, fltProfondeur,
              fltLargeur, 0, 0,
              fltLargeur, 0, fltProfondeur,
-    // Mur ouest
+ 			 // Mur ouest
              0, fltHauteur, fltProfondeur,
              0, fltHauteur, 0,
              0, 0, fltProfondeur,
@@ -55,33 +55,32 @@ function creerCouleursMurs(objgl, tabCouleur) {
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
 
-    return objCouleursMurs;
+	return objCouleursMurs;
 }
 
 function creerTexelsMurs(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
-    var tabTexels = [
-    // Mur nord
+     var tabTexels = [
+			// Mur nord
              0.0, 0.0,
              fltLargeur, 0.0,
              0.0, fltHauteur,
              fltLargeur, fltHauteur,
-    // Mur sud
+			 // Mur sud
 			 0.0, 0.0,
              fltLargeur, 0.0,
              0.0, fltHauteur,
              fltLargeur, fltHauteur,
-    // Mur est
+			 // Mur est
 			 0.0, 0.0,
              fltProfondeur, 0.0,
              0.0, fltHauteur,
              fltProfondeur, fltHauteur,
-    // Mur ouest
+			 // Mur ouest
 			 0.0, 0.0,
              fltProfondeur, 0.0,
              0.0, fltHauteur,
              fltProfondeur, fltHauteur
         ];
-
 
     var objTexelsMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
@@ -90,32 +89,32 @@ function creerTexelsMurs(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoText
     objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 1.0;
 
     return objTexelsMurs;
-}
+  }
 
 function creerMaillageMurs(objgl) {
-    var tabMaillage =
+       var tabMaillage =
             [ // Les 2 triangles du mur nord
              0, 1, 2,
              1, 2, 3,
-    // Les 2 triangles du mur sud
+			 // Les 2 triangles du mur sud
 			 4, 5, 6,
              5, 6, 7,
-    // Les 2 triangles du mur est
+			 // Les 2 triangles du mur est
 			 8, 9, 10,
              9, 10, 11,
-    // Les 2 triangles du mur ouest
+			 // Les 2 triangles du mur ouest
 			 12, 13, 14,
              13, 14, 15
             ];
 
-    var objMaillageMurs = objgl.createBuffer();
-    objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageMurs);
-    objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
+	    var objMaillageMurs = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageMurs);
+        objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
-    // Le nombre de triangles
-    objMaillageMurs.intNbTriangles = 8;
-    // Le nombre de droites
-    objMaillageMurs.intNbDroites = 0;
+        // Le nombre de triangles
+        objMaillageMurs.intNbTriangles = 8;
+        // Le nombre de droites
+        objMaillageMurs.intNbDroites = 0;
 
-    return objMaillageMurs;
-}
+        return objMaillageMurs;
+    }

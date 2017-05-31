@@ -1,8 +1,8 @@
 
-function creerObj3DSol(objgl, intNoTexture) {
+function creerObj3DSol(objgl, intNoTexture, positionX, positionZ) {
     var obj3DSol = new Object();
-    obj3DSol.fltProfondeur = 31;
-    obj3DSol.fltLargeur = 31;
+    obj3DSol.fltProfondeur = 1;
+    obj3DSol.fltLargeur = 1;
     obj3DSol.fltHauteur = 0;
 
     obj3DSol.vertex = creerVertexSol(objgl, obj3DSol.fltLargeur, obj3DSol.fltProfondeur);
@@ -10,7 +10,8 @@ function creerObj3DSol(objgl, intNoTexture) {
 	obj3DSol.texels = creerTexelsSol(objgl, obj3DSol.fltLargeur, obj3DSol.fltProfondeur, intNoTexture);
 	obj3DSol.maillage = creerMaillageSol(objgl);
 
-    obj3DSol.transformations = creerTransformations();
+	obj3DSol.transformations = creerTransformations();
+	setPositionsXYZ([positionX, 0, positionZ], obj3DSol.transformations);
     return obj3DSol;
 }
 

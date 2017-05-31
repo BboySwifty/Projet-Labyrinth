@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Projet Final par Alain Abboud, Francis Chartrand et Yacine Sahli</title>
+  <title>Projet Final par Alain Abboud et Yacine Sahli</title>
 
   <script type="text/javascript" src="WebGl.js"></script>
   <script type="text/javascript" src="ShaderCouleursTextures.js"></script>
@@ -15,6 +15,8 @@
   <script type="text/javascript" src="Ciel.js"></script>
   <script type="text/javascript" src="Textures.js"></script>
     <script type="text/javascript" src="Niveau.js"></script>
+    <script type="text/javascript" src="Tele.js"></script>
+    <script type="text/javascript" src="Tresor.js"></script>
   <script type="text/javascript">
 
      var objgl = null;
@@ -27,16 +29,47 @@
 	 var OBJ3D_TUNNELS = 3;
 	 var OBJ3D_CIEL = 4;
 
-	 var tabImages = ['Transparent.gif', 'lava0003.png', 'lavawall.jpg', 'Ciel.jpg'];
+	 var tabImages = ['Transparent.gif', 'lava0003.png', 'lavawall.jpg', 'Ciel.jpg', 'murEnclos.jpg', 'gazon3.png', 'oiseau.jpg','tiles.jpg','metal.jpg'];
 	 var TEX_TRANSPARENT = 0;
 	 var TEX_SOL = 1;
 	 var TEX_MUR = 2;
 	 var TEX_CIEL = 3;
+	 var TEX_MURENCLOS = 4;
+	 var TEX_SOLENCLOS = 5;
+	 var TEX_TRANSPORTEUR = 6;
+	 var TEX_RECEPTEUR = 7;
+	 var TEX_TRESOR = 8;
 
+     var tabNiveau = new Array(31);
+     var objSons = null;
    var tabKeys = new Array();
    var binMouvement = false;
-   var intVitesse = 0.5;
+   var intVitesse = 0.6;
    var t = null;
+   var camera = null;
+   var fltRapportCanevas = null;
+   var matProjection = null;
+   var blnAerien = false;
+   var intNiveau = 1;
+   var tabCoordonneesTransporteurs = new Array();
+   var tabCoordonneesRecepteurs= new Array();
+
+   var intScore = 300;
+   var intTresor = 1;
+   var intOuvreurs = 0;
+   var intFleches = 0;
+   var intTeles = 0;
+   var intRecepteurs = 0;
+   var fltXCamera = 0;
+   var fltYCamera = 0;
+   var fltXPrime = 0;
+   var fltZPrime = 0;
+   var fltXCibleCamera = 0;
+   var fltZCibleCamera = 0;
+   var intCompteurTransporteurs = 0;
+   var intCompteurRecepteurs = 0;
+   var fltPositionXTresor = 3;
+   var fltPositionZTresor = 12;
 
     function demarrer() {
        var objCanvas = document.getElementById('monCanvas');
@@ -44,284 +77,400 @@
        objProgShaders = initShaders(objgl);
        objScene3D = initScene3D(objgl); // Créer la scène
 
+       initSons();
+       objSons.commenceNiveau.play();
        effacerCanevas(objgl);
        dessiner(objgl, objProgShaders, objScene3D);
+   }
+
+   //Fonction qui, selon les paramètres, initialise les tableaux de coordonnées des transporteurs et récepteurs
+   function initTableaux(intTransporteurs, intRecepteurs) {
+
+       for (var i = 0; i < intTransporteurs; i++) {
+           tabCoordonneesTransporteurs[i] = new Array(2);
+       }
+       for (var i = 0; i < intRecepteurs; i++) {
+           tabCoordonneesRecepteurs[i] = new Array(2);
+       }
+   }
+
+   //Fonction qui stock les coordonnées des transporteurs et des récepteurs et les insère dans tabNiveau pour qu'ils apparaissent dans la scène 3D
+   function insererValeurDansTabNiveau(intX, intZ, legende, blnTransporteur) {
+
+       tabNiveau[intX][intZ] = legende;
+       if (blnTransporteur) {
+           tabCoordonneesTransporteurs[intCompteurTransporteurs][0] = intX;
+           tabCoordonneesTransporteurs[intCompteurTransporteurs][1] = intZ;
+           intCompteurTransporteurs++;
+       }
+       else {
+           tabCoordonneesRecepteurs[intCompteurRecepteurs][0] = intX;
+           tabCoordonneesRecepteurs[intCompteurRecepteurs][1] = intZ;
+           intCompteurRecepteurs++;
+       }
    }
 
      function initScene3D(objgl) {
          var objScene3D = new Object();
          var tabObjets3D = new Array();
-
+         camera = creerCamera();
 
          // Mettre les textures dans la scène
          objScene3D.textures = creerTextures(objgl, tabImages);
-        // objScene3D.textures = creerTextures(objgl, ['Transparent.gif', 'mur1.png']);
-
-        var tabNiveau = new Array(31);
 
          for (var i = 0; i < 31; i++) {
              tabNiveau[i] = new Array(31);
          }
          /*
+         LÉGENDE
          0 = Couloir
          1 = Mur
          2 = Cellule de l'enclos
          3 = Mur Non Ouvrable
+         4 = Trésor
+         5 = Transporteur
+         6 = Récepteur
+
          */
          tabNiveau = [
-                   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 3, 3, 0, 3, 3, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 3, 3, 3, 3, 3, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-                   [1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-                   [1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
-                   [1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-                   [1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-                   [1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1],
-                   [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
-                   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                   [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 3, 3, 0, 3, 3, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 3, 2, 2, 2, 3, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 3, 3, 3, 3, 3, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 3],
+                   [3, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 3],
+                   [3, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 3],
+                   [3, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 3],
+                   [3, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 3],
+                   [3, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 3],
+                   [3, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 3],
+                   [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+                   [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
          ];
+         if (intNiveau == 1) {
+             intOuvreurs = 4;
+             intFleches = 18;
+             initTableaux(1,1); //Juste pour initialiser les tableaux
 
+         }
+         if (intNiveau == 2) {
+             intOuvreurs = 4;
+             intFleches = 16;
+             initTableaux(1, 1);
+             insererValeurDansTabNiveau(11, 14, '5', true);     //Création d'un transporteur
+             insererValeurDansTabNiveau(29, 27, '6', false);    //Création d'un récepteur
+         }
+         if (intNiveau == 3) {
+             intOuvreurs = 3;
+             intFleches = 14;
+             initTableaux(1, 2);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+         }
+         if (intNiveau == 4) {
+             intOuvreurs = 3;
+             intFleches = 12;
+             initTableaux(2, 3);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+         }
+         if (intNiveau == 5) {
+             intOuvreurs = 2;
+             intFleches = 10;
+             initTableaux(2, 4);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+         }
+         if (intNiveau == 6) {
+             intOuvreurs = 2;
+             intFleches = 8;
+             initTableaux(3, 5);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(5, 29, '5', true);
+             insererValeurDansTabNiveau(21, 25, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+         }
+         if (intNiveau == 7) {
+             intOuvreurs = 1
+             intFleches = 6;
+             initTableaux(3, 6);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(5, 29, '5', true);
+             insererValeurDansTabNiveau(21, 25, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(1, 1, '6', false);
+         }
+         if (intNiveau == 8) {
+             intOuvreurs = 1;
+             intFleches = 4;
+             initTableaux(4, 7);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(5, 29, '5', true);
+             insererValeurDansTabNiveau(25, 15, '5', true);
+             insererValeurDansTabNiveau(21, 25, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(1, 1, '6', false);
+             insererValeurDansTabNiveau(10, 10, '6', false);
+         }
+         if (intNiveau == 9) {
+             intOuvreurs = 2;
+             intFleches = 0;
+             initTableaux(4, 8);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(5, 29, '5', true);
+             insererValeurDansTabNiveau(25, 15, '5', true);
+             insererValeurDansTabNiveau(21, 25, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(1, 1, '6', false);
+             insererValeurDansTabNiveau(10, 10, '6', false);
+             insererValeurDansTabNiveau(3, 20, '6', false);
+         }
+         if (intNiveau == 10) {
+             intOuvreurs = 0;
+             intFleches = 0;
+             initTableaux(5, 9);
+             insererValeurDansTabNiveau(11, 14, '5', true);
+             insererValeurDansTabNiveau(12, 22, '5', true);
+             insererValeurDansTabNiveau(5, 29, '5', true);
+             insererValeurDansTabNiveau(25, 15, '5', true);
+             insererValeurDansTabNiveau(20, 11, '5', true);
+             insererValeurDansTabNiveau(21, 25, '6', false);
+             insererValeurDansTabNiveau(9, 1, '6', false);
+             insererValeurDansTabNiveau(27, 5, '6', false);
+             insererValeurDansTabNiveau(3, 29, '6', false);
+             insererValeurDansTabNiveau(29, 27, '6', false);
+             insererValeurDansTabNiveau(1, 1, '6', false);
+             insererValeurDansTabNiveau(10, 10, '6', false);
+             insererValeurDansTabNiveau(3, 20, '6', false);
+             insererValeurDansTabNiveau(16, 8, '6', false);
+         }
+         var obj3DTresor = creerObj3DTresor(objgl, obj3DSol, TEX_TRESOR, fltPositionXTresor, fltPositionZTresor);
+         tabObjets3D.push(obj3DTresor);
          // Mettre les objets 3D sur la scène
          objScene3D.tabObjets3D = tabObjets3D;
 
-         // Créer le sol
-         var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
-         tabObjets3D.push(obj3DSol);
-
-		     // Créer les murs
-         var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
-         tabObjets3D.push(obj3DMurs);
-
 		     // Créer le ciel
-         var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-         tabObjets3D.push(obj3DCiel);
+         var obj3DCiel = creerObj3DCiel(objgl, TEX_CIEL);
+       //  tabObjets3D.push(obj3DCiel);
 
         for (var i = 0; i < 31; i++) {
             for (var j = 0; j < 31; j++) {
-                //Briques
+                //Mur du labyrinthe
                 if (tabNiveau[i][j] == 1) {
-                    // Créer 1 cube
-
-                    var objet3D = new Object();
-                    objet3D.vertex = creerCube(objgl);
-                    objet3D.couleurs = creerCouleursCube(objgl);
-                    objet3D.maillage = creerMaillageCube(objgl);
-                    objet3D.texels = creerTexelsCube(objgl);
-                    objet3D.transformations = creerTransformations();
-                    setPositionsXYZ([j, 1, i], objet3D.transformations);
-                    tabObjets3D.push(objet3D);
-
+                    var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR,i,j);
+                    tabObjets3D.push(obj3DMurs);
+                }
+                //Mur de l'enclos
+                if (tabNiveau[i][j] == 3) {
+                    var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MURENCLOS,i,j);
+                    tabObjets3D.push(obj3DMurs);
+                }
+                //Transporteur
+                if (tabNiveau[i][j] == 5) {
+                    var obj3DTele = creerObj3DTele(objgl, obj3DSol, TEX_TRANSPORTEUR, i, j);
+                    tabObjets3D.push(obj3DTele);
+                }
+                //Recepteur
+                if (tabNiveau[i][j] == 6) {
+                    var obj3DTele = creerObj3DTele(objgl, obj3DSol, TEX_RECEPTEUR, i, j);
+                    tabObjets3D.push(obj3DTele);
+                }
+                //Pour le sol de l'enclos
+                if (tabNiveau[i][j] == 2) {
+                    var obj3DSol = creerObj3DSol(objgl, TEX_SOLENCLOS, i, j);
+                    tabObjets3D.push(obj3DSol);
+                }
+                //Ca lag vraiment à cause de ca!!!
+                //Pour le sol du labynthe
+                if (tabNiveau[i][j] == 0) {
+                    var obj3DSol = creerObj3DSol(objgl, TEX_SOL, i, j);
+                    tabObjets3D.push(obj3DSol);
                 }
             }
         }
-
 		 // Mettre les objets 3D sur la scène
          objScene3D.tabObjets3D = tabObjets3D;
 
          // La caméra
-         var camera = creerCamera();
-         setPositionsCameraXYZ([15.5, 0.5, 15.5], camera);
-         setCiblesCameraXYZ([15.5, 0.5, 0], camera);
-         setOrientationsXYZ([0, 1, 0], camera);
-
-         // Vue aérienne
-         /*setPositionsCameraXYZ([15.5, 39, 15.5], camera);
-         setCiblesCameraXYZ([15.5, 0, 15.5], camera);
-         setOrientationsXYZ([0, 0, 1], camera);*/
-
+         if (blnAerien == false) {
+             setPositionsCameraXYZ([16.5, 0.5, 15.5], camera);
+             setCiblesCameraXYZ([16.4, 0.5, 15.5], camera);
+             setOrientationsXYZ([0, 1, 0], camera);
+         }
+         else {
+             setPositionsCameraXYZ([15.5, 375, 15.5], camera);
+             setCiblesCameraXYZ([15.5, 0, 15.5], camera);
+             setOrientationsXYZ([-1, 0, 0], camera);
+         }
          objScene3D.camera = camera;
 
          return objScene3D;
      }
+     //Fonction appelée quand le personnage récupère le trésor, une musique est jouée et son score augmente avant de passer au niveau suivant
+     function gagnerNiveau() {
 
-     function dessiner(objgl, objProgShaders, objScene3D) {
-         // La vue
-         objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
-
-         // Matrice de projection
-         var matProjection = mat4.create();
-         var fltRapportCanevas = objgl.drawingBufferWidth / objgl.drawingBufferHeight;
-         mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
-
-         // Relier la matrice aux shaders
-         objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
-
-         for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
-             var vertex = objScene3D.tabObjets3D[i].vertex;
-             var couleurs = objScene3D.tabObjets3D[i].couleurs;
-             var texels = objScene3D.tabObjets3D[i].texels;
-             var maillage = objScene3D.tabObjets3D[i].maillage;
-             var transformations = objScene3D.tabObjets3D[i].transformations;
-
-             // Matrice du modèle
-
-             var matModeleVue = mat4.create();
-             mat4.identity(matModeleVue);
-
-             // Placer la caméra sur la scène
-             mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
-                         getCiblesCameraXYZ(objScene3D.camera),
-                         getOrientationsXYZ(objScene3D.camera),
-                         matModeleVue);
-
-             // Appliquer les transformations sur le modèle
-             mat4.translate(matModeleVue, getPositionsXYZ(transformations));
-             mat4.scale(matModeleVue, getEchellesXYZ(transformations));
-             mat4.rotateX(matModeleVue, getAngleX(transformations) * Math.PI / 180);
-             mat4.rotateY(matModeleVue, getAngleY(transformations) * Math.PI / 180);
-             mat4.rotateZ(matModeleVue, getAngleZ(transformations) * Math.PI / 180);
-
-             // Relier la matrice aux shaders
-             objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
-
-             if (maillage == null)
-                 // Dessiner les sous-objets
-                 for (var j = 0; j < vertex.length; j++) {
-
-                     // Relier les vertex aux shaders
-                     objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
-                     objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
-                     var intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
-
-                     // Relier les couleurs aux shaders
-                     objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
-                     objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
-
-                     // Activer la texture
-                     objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
-                     objgl.bindTexture(objgl.TEXTURE_2D, objScene3D.textures[texels[j].intNoTexture]);
-
-                     // Relier les texels aux shaders
-                     objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
-                     objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
-
-                     // Relier le no de texture et le taux de couleur aux shaders
-                     objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
-                     objgl.uniform1f(objProgShaders.pcCouleurTexel, texels[j].pcCouleurTexel);
-
-                     // Dessiner
-                     objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
-                 }
-             else { // Dessiner le maillage
-
-                 // Relier les vertex aux shaders
-                 objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
-                 objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
-
-                 // Relier les couleurs aux shaders
-                 objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
-                 objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
-
-                 // Activer la texture
-                 objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
-                 objgl.bindTexture(objgl.TEXTURE_2D, objScene3D.textures[texels.intNoTexture]);
-
-                 // Relier les texels aux shaders
-                 objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
-                 objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
-
-                 // Relier le no de texture et le taux de couleur aux shaders
-                 objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
-                 objgl.uniform1f(objProgShaders.pcCouleurTexel, texels.pcCouleurTexel);
-
-                 // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
-                 objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
-
-                 // Dessiner les triangles
-                 objgl.drawElements(objgl.TRIANGLES, maillage.intNbTriangles * 3, objgl.UNSIGNED_SHORT, 0);
-                 // Dessiner les droites à la suite des triangles
-                 objgl.drawElements(objgl.LINES, maillage.intNbDroites * 2, objgl.UNSIGNED_SHORT, maillage.intNbTriangles * 2 * 3);
+         if (intNiveau == 10) {
+             while (1 == 1) {
+                 objSons.reussiJeu.play();
              }
          }
+         else {
+             objSons.terminerNiveau.play();
+             intCompteurRecepteurs = 0;
+             intCompteurTransporteurs = 0;
+             intScore += 10;    //Devrait être 10 * le nombre de secondes restantes mais je n'ai pas encore implanté le chronomètre
+             intNiveau++;
+
+             console.log(intNiveau);
+             objSons.commenceNiveau.play();
+             demarrer();
+             setPositionsCameraXYZ([16.5, 0.5, 15.5], camera);
+             setCiblesCameraXYZ([16.4, 0.5, 15.5], camera);
+             setOrientationsXYZ([0, 1, 0], camera);
+
+         }
+
      }
 
-    function effacerCanevas(objgl) {
-      // Met la couleur d'effacement au noir et complétement opaque
-      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
-      // Efface les couleurs et le buffer de profondeur.
-      objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
-    }
 
-    function deplacementKeyDown(){
-      tabKeys[event.keyCode] = true; // index = keyCode du bouton et true = keydown
-      if(!binMouvement){
-        deplacerCamera();
-      }
-    }
-
-    function deplacementKeyUp(){
-      clearTimeout(t);
-      tabKeys[event.keyCode] = false; // false = keyup
-      binMouvement = false;
-    }
 
     function deplacerCamera() {
          var camera = objScene3D.camera;
          binMouvement = true;
 
-         if (tabKeys[37] || tabKeys[39]) {
-             // 37:  Flèche-à-gauche; 39:Flèche-à-droite
-             var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-             var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-             var intDirection = (tabKeys[37]) ? -1 : 1;
-             var fltAngle = intDirection * Math.PI / 75; // Tourner 1.5 degrés
-             var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
-             var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
-             setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-             setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
-         }
-         else
-             if (tabKeys[38] || tabKeys[40]) {
-                 // 38:  Flèche-en-haut; 40:Flèche-en-bas
-                 var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-                 var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-                 var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
-                 var intDirection = (tabKeys[38]) ? 1 : -1;
 
-                 var fltXPrime = intDirection * intVitesse * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
-                 var fltZPrime = intDirection * intVitesse * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
+         if (tabKeys[17] && tabKeys[16] && tabKeys[32]) {    //Vue aérienne
+             blnAerien = true;
+             fltXCamera = getPositionCameraX(camera);
+             fltZCamera = getPositionCameraZ(camera);
+             fltXCibleCamera = getCibleCameraX(camera);
+             fltZCibleCamera = getCibleCameraZ(camera);
+             setPositionsCameraXYZ([15.5, 375, 15.5], camera);
+             setCiblesCameraXYZ([15.5, 0, 15.5], camera);
+             setOrientationsXYZ([-1, 0, 0], camera);
+             }
+         else if (tabKeys[34]) {    //Page down
+             blnAerien = false;
+             setPositionsCameraXYZ([fltXCamera, 0.5, fltZCamera], camera);
+             setCiblesCameraXYZ([fltXCibleCamera, 0.5, fltZCibleCamera], camera);
+             console.log("cibles x et z : " + fltXCibleCamera + " et : " + fltZCibleCamera);
+             setOrientationsXYZ([0, 1, 0], camera);
+            }
+         else if (tabKeys[32] && blnAerien==false) {    //Ouvreur de mur
+                 console.log("ouvreur de mur");
+                 intOuvreurs--;
+                 intScore -= 50;
+             }
+             if (blnAerien == false) {
+                 if (tabKeys[37] || tabKeys[39]) {
+                     // 37:  Flèche-à-gauche; 39:Flèche-à-droite
+                     var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+                     var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+                     var intDirection = (tabKeys[37]) ? -1 : 1;
+                     var fltAngle = intDirection * Math.PI / 75; // Tourner 1.5 degrés
+                     fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
+                     fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
+                     setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
+                     setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+                 }
+                 if (tabKeys[38] || tabKeys[40]) {
+                     // 38:  Flèche-en-haut; 40:Flèche-en-bas
+                     var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+                     var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+                     var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
+                     var intDirection = (tabKeys[38]) ? 1 : -1;
 
-                 // Positions de la caméra
-                 var fltXCamera = getPositionX(camera) + fltXPrime;
-                 var fltZCamera = getPositionZ(camera) + fltZPrime;
+                     fltXPrime = intDirection * intVitesse * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
+                     fltZPrime = intDirection * intVitesse * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
 
-                 // Limites du mur
-                 var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur + 0.1;
-                 var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur - 0.1;
-                 var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
-                 var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur - 0.1;
+                     // Positions de la caméra
+                     fltXCamera = getPositionX(camera) + fltXPrime;
+                     fltZCamera = getPositionZ(camera) + fltZPrime;
 
-                 var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
+
+                     //            console.log("tes positions x et z : " + fltXCamera + " et : " + fltZCamera);
+                     //            console.log("les coordonnées du transporteur :  " + tabCoordonneesTransporteurs[0][0] + " et : " + tabCoordonneesTransporteurs[0][1]);
+
+                     //Pour voir s'il y a collision entre le joueur et un télé-transporteur
+
+                     for (var i =0; i< tabCoordonneesTransporteurs.length;i++){
+                         if (tabCoordonneesRecepteurs[0].length > 0) {
+                             var fltEcartX = fltXCamera - tabCoordonneesTransporteurs[i][0];
+                             var fltEcartZ = fltZCamera - tabCoordonneesTransporteurs[i][1];
+                             if (fltEcartX <= 1 && fltEcartX >= -1 && fltEcartZ <= 1 && fltEcartZ >= -1) {
+                                 var fltIndexPotentiel = Math.floor((Math.random() * tabCoordonneesRecepteurs.length));
+                                 setPositionCameraX(tabCoordonneesRecepteurs[fltIndexPotentiel][0]+0.5, camera);
+                                 setPositionCameraZ(tabCoordonneesRecepteurs[fltIndexPotentiel][1] + 0.5, camera);
+                                 objSons.Transportation.play();
+                             }
+                         }
+                     }
+                     var fltEcartX = fltXCamera - fltPositionXTresor;
+                     var fltEcartZ = fltZCamera - fltPositionZTresor;
+                             if (fltEcartX <= 1 && fltEcartX >= -1 && fltEcartZ <= 1 && fltEcartZ >= -1)
+                                 gagnerNiveau();
+                     // Limites du mur
+                     var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur + 0.1;
+                     var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur - 0.1;
+                     var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
+                     var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur - 0.1;
+
+                     var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
                                           (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
 
 
-                 // Déplacer la caméra s'il n'y a pas de collision
-                 if (binAucuneCollision) {
+                     //Les collisions provoquent des bugs!!
+                     verificationCollisions(camera);
+
+                     /*
+                     // Déplacer la caméra s'il n'y a pas de collision
+                     if (binAucuneCollision) {*/
                      setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
                      setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
                      setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-                     setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+                     setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera); /*
                  }
                  else { // Pour longer les murs s'il y a une collision
                      if (fltXCamera <= fltLimiteOuest || fltXCamera >= fltLimiteEst) {
@@ -344,22 +493,225 @@
                          setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
                          setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
                      }
+                 }*/
                  }
              }
+
         effacerCanevas(objgl);
         dessiner(objgl, objProgShaders, objScene3D);
 
         t = setTimeout(deplacerCamera, 10);
-     }
+    }
+
+    function verificationCollisions(camera){
+      var ecartX = getPositionCameraX(camera) % 1;
+      var ecartZ = getPositionCameraZ(camera) % 1;
+      if(ecartX <= 0.12 && fltXPrime < 0){
+        var verifX = Math.round(getPositionCameraX(camera)) - 1;
+        var verifZ = 30 - Math.floor(getPositionCameraZ(camera));
+        if(tabNiveau[verifX][verifZ] == 1 || tabNiveau[verifX][verifZ] == 3) {
+          fltXPrime = 0;
+        }
+      }
+      if(ecartX >= 0.88 && fltXPrime > 0){
+        var verifX = Math.round(getPositionCameraX(camera));
+        var verifZ = 30 - Math.floor(getPositionCameraZ(camera));
+        if(tabNiveau[verifX][verifZ] == 1 || tabNiveau[verifX][verifZ] == 3) {
+          fltXPrime = 0;
+        }
+      }
+      if(ecartZ <= 0.12 && fltZPrime < 0){
+        var verifX = Math.floor(getPositionCameraX(camera));
+        var verifZ = 31 - Math.round(getPositionCameraZ(camera));
+        if(tabNiveau[verifX][verifZ] == 1 || tabNiveau[verifX][verifZ] == 3) {
+          fltZPrime = 0;
+        }
+      }
+      if(ecartZ >= 0.88 && fltZPrime > 0){
+        var verifX = Math.floor(getPositionCameraX(camera));
+        var verifZ = 30 - Math.round(getPositionCameraZ(camera));
+        if(tabNiveau[verifX][verifZ] == 1 || tabNiveau[verifX][verifZ] == 3) {
+          fltZPrime = 0;
+        }
+      }
+      document.getElementById("info").innerHTML = "X = " + getPositionCameraX(camera) + " - Z = " + getPositionCameraZ(camera);
+    }
+
+    function dessiner(objgl, objProgShaders, objScene3D) {
+        // La vue
+        objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+        // Matrice de projection
+        matProjection = mat4.create();
+        fltRapportCanevas = objgl.drawingBufferWidth / objgl.drawingBufferHeight
+
+        if (blnAerien == false)
+            mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
+        else
+            mat4.perspective(5, fltRapportCanevas, 0.01, 1000, matProjection);
+
+
+        // Relier la matrice aux shaders
+        objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+        for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
+            var vertex = objScene3D.tabObjets3D[i].vertex;
+            var couleurs = objScene3D.tabObjets3D[i].couleurs;
+            var texels = objScene3D.tabObjets3D[i].texels;
+            var maillage = objScene3D.tabObjets3D[i].maillage;
+            var transformations = objScene3D.tabObjets3D[i].transformations;
+
+            // Matrice du modèle
+
+            var matModeleVue = mat4.create();
+            mat4.identity(matModeleVue);
+
+            // Placer la caméra sur la scène
+            mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
+                         getCiblesCameraXYZ(objScene3D.camera),
+                         getOrientationsXYZ(objScene3D.camera),
+                         matModeleVue);
+
+            // Appliquer les transformations sur le modèle
+            mat4.translate(matModeleVue, getPositionsXYZ(transformations));
+            mat4.scale(matModeleVue, getEchellesXYZ(transformations));
+            mat4.rotateX(matModeleVue, getAngleX(transformations) * Math.PI / 180);
+            mat4.rotateY(matModeleVue, getAngleY(transformations) * Math.PI / 180);
+            mat4.rotateZ(matModeleVue, getAngleZ(transformations) * Math.PI / 180);
+
+            // Relier la matrice aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+            if (maillage == null)
+            // Dessiner les sous-objets
+                for (var j = 0; j < vertex.length; j++) {
+
+                    // Relier les vertex aux shaders
+                    objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
+                    objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+                    var intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+                    // Relier les couleurs aux shaders
+                    objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
+                    objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+                    // Activer la texture
+                    objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
+                    objgl.bindTexture(objgl.TEXTURE_2D, objScene3D.textures[texels[j].intNoTexture]);
+
+                    // Relier les texels aux shaders
+                    objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
+                    objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
+
+                    // Relier le no de texture et le taux de couleur aux shaders
+                    objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
+                    objgl.uniform1f(objProgShaders.pcCouleurTexel, texels[j].pcCouleurTexel);
+
+                    // Dessiner
+                    objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
+                }
+            else { // Dessiner le maillage
+
+                // Relier les vertex aux shaders
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+                objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+                // Relier les couleurs aux shaders
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
+                objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+
+                // Activer la texture
+                objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
+                objgl.bindTexture(objgl.TEXTURE_2D, objScene3D.textures[texels.intNoTexture]);
+
+                // Relier les texels aux shaders
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
+                objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
+
+                // Relier le no de texture et le taux de couleur aux shaders
+                objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
+                objgl.uniform1f(objProgShaders.pcCouleurTexel, texels.pcCouleurTexel);
+
+                // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+                objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
+
+                // Dessiner les triangles
+                objgl.drawElements(objgl.TRIANGLES, maillage.intNbTriangles * 3, objgl.UNSIGNED_SHORT, 0);
+                // Dessiner les droites à la suite des triangles
+                objgl.drawElements(objgl.LINES, maillage.intNbDroites * 2, objgl.UNSIGNED_SHORT, maillage.intNbTriangles * 2 * 3);
+            }
+        }
+    }
+
+    function effacerCanevas(objgl) {
+        // Met la couleur d'effacement au noir et complétement opaque
+        objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+        // Efface les couleurs et le buffer de profondeur.
+        objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function deplacementKeyDown() {
+        tabKeys[event.keyCode] = true; // index = keyCode du bouton et true = keydown
+        if (!binMouvement) {
+            deplacerCamera();
+        }
+    }
+
+    function deplacementKeyUp() {
+        clearTimeout(t);
+        tabKeys[event.keyCode] = false; // false = keyup
+        binMouvement = false;
+    }
+    function initSons() {
+        objSons = new Object();
+
+        var objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'or.mp3');
+        objSon.load();
+        objSons.verifieTresor = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'Transportation.mp3');
+        objSon.load();
+        objSons.Transportation = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'perduVie.mp3');
+        objSon.load();
+        objSons.perduVie = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'gameOver.mp3');
+        objSon.load();
+        objSons.VerifieGameOver = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'SonNextLevel.mp3');
+        objSon.load();
+        objSons.terminerNiveau = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'commenceNiveau.mp3');
+        objSon.load();
+        objSons.commenceNiveau = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'reussiJeu.mp3');
+        objSon.load();
+        objSons.reussiJeu = objSon;
+
+
+    }
 
 </script>
 </head>
 
 <body onload="demarrer()">
   <p align="center">
-  	<canvas id="monCanvas" width="640" height="640" tabIndex="1" onkeydown="deplacementKeyDown()" onkeyup="deplacementKeyUp()">
+  	<canvas id="monCanvas" width="1280" height="720" tabIndex="1" onkeydown="deplacementKeyDown()" onkeyup="deplacementKeyUp()">
   		Votre navigateur ne supporte pas la balise canvas
   	</canvas>
+    <div>Info: <span id="info"></span></div>
   </p>
 
 
