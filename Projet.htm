@@ -45,6 +45,7 @@
    var tabKeys = new Array();
    var binMouvement = false;
    var intVitesse = 0.6;
+   var intHauteur = 0.5;
    var t = null;
    var camera = null;
    var fltRapportCanevas = null;
@@ -335,8 +336,8 @@
 
          // La caméra
          if (blnAerien == false) {
-             setPositionsCameraXYZ([16.5, 0.5, 15.5], camera);
-             setCiblesCameraXYZ([16.4, 0.5, 15.5], camera);
+             setPositionsCameraXYZ([16.5, intHauteur, 15.5], camera);
+             setCiblesCameraXYZ([16.4, intHauteur, 15.5], camera);
              setOrientationsXYZ([0, 1, 0], camera);
          }
          else {
@@ -366,12 +367,11 @@
              console.log(intNiveau);
              objSons.commenceNiveau.play();
              demarrer();
-             setPositionsCameraXYZ([16.5, 0.5, 15.5], camera);
-             setCiblesCameraXYZ([16.4, 0.5, 15.5], camera);
+             setPositionsCameraXYZ([16.5, intHauteur, 15.5], camera);
+             setCiblesCameraXYZ([16.4, intHauteur, 15.5], camera);
              setOrientationsXYZ([0, 1, 0], camera);
 
          }
-
      }
 
 
@@ -381,29 +381,30 @@
          binMouvement = true;
 
 
-         if (tabKeys[17] && tabKeys[16] && tabKeys[32]) {    //Vue aérienne
+         if (tabKeys[80] && !blnAerien) {    //Vue aérienne
              blnAerien = true;
              fltXCamera = getPositionCameraX(camera);
              fltZCamera = getPositionCameraZ(camera);
              fltXCibleCamera = getCibleCameraX(camera);
              fltZCibleCamera = getCibleCameraZ(camera);
+             document.getElementById("info").innerHTML = "cibles x et z : " + fltXCibleCamera + " et : " + fltZCibleCamera;
              setPositionsCameraXYZ([15.5, 375, 15.5], camera);
              setCiblesCameraXYZ([15.5, 0, 15.5], camera);
              setOrientationsXYZ([-1, 0, 0], camera);
              }
-         else if (tabKeys[34]) {    //Page down
+         else if (tabKeys[34] && blnAerien) {    //Page down
              blnAerien = false;
-             setPositionsCameraXYZ([fltXCamera, 0.5, fltZCamera], camera);
-             setCiblesCameraXYZ([fltXCibleCamera, 0.5, fltZCibleCamera], camera);
+             setPositionsCameraXYZ([fltXCamera, intHauteur, fltZCamera], camera);
+             setCiblesCameraXYZ([fltXCibleCamera, intHauteur, fltZCibleCamera], camera);
              console.log("cibles x et z : " + fltXCibleCamera + " et : " + fltZCibleCamera);
              setOrientationsXYZ([0, 1, 0], camera);
             }
-         else if (tabKeys[32] && blnAerien==false) {    //Ouvreur de mur
-                 console.log("ouvreur de mur");
-                 intOuvreurs--;
-                 intScore -= 50;
-             }
-             if (blnAerien == false) {
+         else if (blnAerien == false) {
+                 if (tabKeys[32]) {    //Ouvreur de mur
+                       console.log("ouvreur de mur");
+                       intOuvreurs--;
+                       intScore -= 50;
+                 }
                  if (tabKeys[37] || tabKeys[39]) {
                      // 37:  Flèche-à-gauche; 39:Flèche-à-droite
                      var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
@@ -441,7 +442,7 @@
                              var fltEcartZ = fltZCamera - tabCoordonneesTransporteurs[i][1];
                              if (fltEcartX <= 1 && fltEcartX >= -1 && fltEcartZ <= 1 && fltEcartZ >= -1) {
                                  var fltIndexPotentiel = Math.floor((Math.random() * tabCoordonneesRecepteurs.length));
-                                 setPositionCameraX(tabCoordonneesRecepteurs[fltIndexPotentiel][0]+0.5, camera);
+                                 setPositionCameraX(tabCoordonneesRecepteurs[fltIndexPotentiel][0]+ 0.5, camera);
                                  setPositionCameraZ(tabCoordonneesRecepteurs[fltIndexPotentiel][1] + 0.5, camera);
                                  objSons.Transportation.play();
                              }
@@ -704,15 +705,27 @@
     }
 
 </script>
+<style>
+.container {
+    position: relative;
+}
+#overlay {
+    position: absolute;
+    left: 100;
+    top: 100;
+}
+</style>
 </head>
 
 <body onload="demarrer()">
-  <p align="center">
+  <div class="container" align="center">
   	<canvas id="monCanvas" width="1280" height="720" tabIndex="1" onkeydown="deplacementKeyDown()" onkeyup="deplacementKeyUp()">
   		Votre navigateur ne supporte pas la balise canvas
   	</canvas>
-    <div>Info: <span id="info"></span></div>
-  </p>
+    <div id="overlay">
+      <div>Info: <span id="info"></span></div>
+    </div>
+</div>
 
 
 </body>

@@ -47,7 +47,7 @@ function creerCube(objgl) {
 
            1.0, 0.0, 0.5,   //10: Centre de droite
            0.0, 0.0, 0.5,  //11: Centre de gauche
-          // 0.5, 1.0, 0.5,   //12: Centre de dessus
+           0.5, 1.0, 0.5,   //12: Centre de dessus
           // 0.5, -1.0, 0.5   //13: Centre de dessous
 
     ];
@@ -102,7 +102,7 @@ function creerTexelsCube(objgl) {
 
                       0.5, 0.5,   //10: Centre de droite
                       0.5, 0.5,  //11: Centre de gauche
-                    // 0.5, 0.5,    //12: Centre de dessus
+                      0.5, 0.5,    //12: Centre de dessus
                     // 0.5, 0.5  //13: Centre de dessous
 
     ];
@@ -146,7 +146,7 @@ function creerMaillageCube(objgl) {
         /* 12, 1, 6,
          12, 6, 9,
          12, 9, 4,
-         12, 4, 1,*/
+         12, 4, 1*/
         ];
 
     objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageCube);
