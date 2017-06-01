@@ -535,7 +535,7 @@
           fltZPrime = 0;
         }
       }
-      document.getElementById("info").innerHTML = "X = " + getPositionCameraX(camera) + " - Z = " + getPositionCameraZ(camera);
+      //document.getElementById("info").innerHTML = "X = " + getPositionCameraX(camera) + " - Z = " + getPositionCameraZ(camera);
     }
 
     function dessiner(objgl, objProgShaders, objScene3D) {
@@ -659,9 +659,17 @@
     }
 
     function deplacementKeyUp() {
-        clearTimeout(t);
         tabKeys[event.keyCode] = false; // false = keyup
-        binMouvement = false;
+        var binEncoreMouvement = false;
+        for(i = 0; i < tabKeys.length; i++){
+          if(tabKeys[i]){
+            binEncoreMouvement = true;
+          }
+        }
+        if(!binEncoreMouvement){
+            binMouvement = false;
+            clearTimeout(t);
+        }
     }
     function initSons() {
         objSons = new Object();
