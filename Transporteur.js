@@ -18,22 +18,11 @@ function creerObj3DTele(objgl, obj3DSol, intNoTexture,positionX,positionZ) {
 function creerVertexTele(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
     // Face avant (Z=1)
-			  0.0, 0.0, 0.5,   // 0: Centre
-              0.5, 0.5, 0.5,   // 1: Coin haut droit
-              0.5, 0, 0.5,  // 2: Coin bas droit
-             -0.5, 0, 0.5,  // 3: Coin bas gauche
-              -0.5, 0.5, 0.5,  // 4: Coin haut gauche
-
-    // Face arriËre (Z=-1) 
-              0.0, 0.0, -0.5,   // 5: Centre
-              0.5, 0.5, -0.5,   // 6: Coin haut droit
-             0.5, 0, -0.5,  // 7: Coin bas droit
-             -0.5, 0, -0.5,  // 8: Coin bas gauche
-              -0.5, 0.5, -0.5,  // 9: Coin haut gauche
-
-              0.0, 0.5, 0.0,      // 10 : Centre du cube en haut
-              0.0, 0.0, 0.0,      // 11: Centre du cube au milieu
-              0.0, -0.5, 0.0,      // 12 : Centre du cube en bas
+			        0.0, 0.5, 0.0,   // 0: Pointe
+              0.5, 0.0, 0.5,   // 1: Coin arri√®re droite
+              -0.5, 0.0, 0.5,  // 2: Coin arri√®re gauche
+              -0.5, 0.0, -0.5,  // 3: Coin avant gauche
+              0.5, 0.0, -0.5,  // 4: Coin avant droite
         ];
 
     var objTele = objgl.createBuffer();
@@ -45,7 +34,7 @@ function creerVertexTele(objgl, fltLargeur, fltProfondeur, fltHauteur) {
 
 function creerCouleursTele(objgl, tabCouleur) {
     tabCouleurs = [];
-    for (var i = 0; i < 16; i++)
+    for (var i = 0; i < 5; i++)
         tabCouleurs = tabCouleurs.concat(tabCouleur);
 
     var objCouleursTele = objgl.createBuffer();
@@ -55,29 +44,14 @@ function creerCouleursTele(objgl, tabCouleur) {
 	return objCouleursTele;
 }
 
-//Fonction inutile, jamais appelÈe....
+//Fonction inutile, jamais appelÔøΩe....
 function creerTexelsTele(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
     var tabTexels = [
-    // Mur nord
-             0.0, 0.0,
-             fltLargeur, 0.0,
-             0.0, fltHauteur,
-             fltLargeur, fltHauteur,
-    // Mur sud
-			 0.0, 0.0,
-             fltLargeur, 0.0,
-             0.0, fltHauteur,
-             fltLargeur, fltHauteur,
-    // Mur est
-			 0.0, 0.0,
-             fltProfondeur, 0.0,
-             0.0, fltHauteur,
-             fltProfondeur, fltHauteur,
-    // Mur ouest
-			 0.0, 0.0,
-             fltProfondeur, 0.0,
-             0.0, fltHauteur,
-             fltProfondeur, fltHauteur
+          0.0, 0.5,
+          1.0, 0.0,
+          1.0, 1.0,
+          1.0, 0.0,
+          1.0, 1.0
         ];
 
     var objTexelsTele = objgl.createBuffer();
@@ -91,10 +65,14 @@ function creerTexelsTele(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoText
 
   function creerMaillageTele(objgl) {
        var tabMaillage =
-            [10, 2, 3,
-             10, 3, 8,
-             10, 8, 7,
-             10, 7, 2,
+            [
+              0, 1, 2,
+              0, 2, 3,
+              0, 3, 4,
+              0, 4, 1,
+
+              1, 3, 2,
+              1, 3, 4
             ];
 
 	    var objMaillageTele = objgl.createBuffer();
@@ -102,7 +80,7 @@ function creerTexelsTele(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoText
         objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
         // Le nombre de triangles
-        objMaillageTele.intNbTriangles = 4;
+        objMaillageTele.intNbTriangles = 6;
         // Le nombre de droites
         objMaillageTele.intNbDroites = 0;
 

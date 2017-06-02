@@ -15,7 +15,7 @@
   <script type="text/javascript" src="Ciel.js"></script>
   <script type="text/javascript" src="Textures.js"></script>
     <script type="text/javascript" src="Niveau.js"></script>
-    <script type="text/javascript" src="Tele.js"></script>
+    <script type="text/javascript" src="Transporteur.js"></script>
     <script type="text/javascript" src="Tresor.js"></script>
   <script type="text/javascript">
 
@@ -24,53 +24,53 @@
      var objScene3D = null;
 
      var OBJ3D_SOL = 0;
-	 var OBJ3D_MURS = 1;
-	 var OBJ3D_CRENEAUX = 2;
-	 var OBJ3D_TUNNELS = 3;
-	 var OBJ3D_CIEL = 4;
+  	 var OBJ3D_MURS = 1;
+  	 var OBJ3D_CRENEAUX = 2;
+  	 var OBJ3D_TUNNELS = 3;
+  	 var OBJ3D_CIEL = 4;
 
-	 var tabImages = ['Transparent.gif', 'lava0003.png', 'lavawall.jpg', 'Ciel.jpg', 'murEnclos.jpg', 'gazon3.png', 'oiseau.jpg','tiles.jpg','metal.jpg'];
-	 var TEX_TRANSPARENT = 0;
-	 var TEX_SOL = 1;
-	 var TEX_MUR = 2;
-	 var TEX_CIEL = 3;
-	 var TEX_MURENCLOS = 4;
-	 var TEX_SOLENCLOS = 5;
-	 var TEX_TRANSPORTEUR = 6;
-	 var TEX_RECEPTEUR = 7;
-	 var TEX_TRESOR = 8;
+  	 var tabImages = ['Transparent.gif', 'woodfloor.jpg', 'stonewall.jpg', 'Ciel.jpg', 'murEnclos.jpg', 'gazon3.png', 'oiseau.jpg','tiles.jpg','metal.jpg'];
+  	 var TEX_TRANSPARENT = 0;
+  	 var TEX_SOL = 1;
+  	 var TEX_MUR = 2;
+  	 var TEX_CIEL = 3;
+  	 var TEX_MURENCLOS = 4;
+  	 var TEX_SOLENCLOS = 5;
+  	 var TEX_TRANSPORTEUR = 6;
+  	 var TEX_RECEPTEUR = 7;
+  	 var TEX_TRESOR = 8;
 
      var tabNiveau = new Array(31);
      var objSons = null;
-   var tabKeys = new Array();
-   var binMouvement = false;
-   var intVitesse = 0.6;
-   var intHauteur = 0.5;
-   var t = null;
-   var camera = null;
-   var fltRapportCanevas = null;
-   var matProjection = null;
-   var blnAerien = false;
-   var intNiveau = 1;
-   var tabCoordonneesTransporteurs = new Array();
-   var tabCoordonneesRecepteurs= new Array();
+     var tabKeys = new Array();
+     var binMouvement = false;
+     var intVitesse = 0.6;
+     var intHauteur = 0.5;
+     var t = null;
+     var camera = null;
+     var fltRapportCanevas = null;
+     var matProjection = null;
+     var blnAerien = false;
+     var intNiveau = 1;
+     var tabCoordonneesTransporteurs = new Array();
+     var tabCoordonneesRecepteurs= new Array();
 
-   var intScore = 300;
-   var intTresor = 1;
-   var intOuvreurs = 0;
-   var intFleches = 0;
-   var intTeles = 0;
-   var intRecepteurs = 0;
-   var fltXCamera = 0;
-   var fltYCamera = 0;
-   var fltXPrime = 0;
-   var fltZPrime = 0;
-   var fltXCibleCamera = 0;
-   var fltZCibleCamera = 0;
-   var intCompteurTransporteurs = 0;
-   var intCompteurRecepteurs = 0;
-   var fltPositionXTresor = 3;
-   var fltPositionZTresor = 12;
+     var intScore = 300;
+     var intTresor = 1;
+     var intOuvreurs = 0;
+     var intFleches = 0;
+     var intTeles = 0;
+     var intRecepteurs = 0;
+     var fltXCamera = 0;
+     var fltYCamera = 0;
+     var fltXPrime = 0;
+     var fltZPrime = 0;
+     var fltXCibleCamera = 0;
+     var fltZCibleCamera = 0;
+     var intCompteurTransporteurs = 0;
+     var intCompteurRecepteurs = 0;
+     var fltPositionXTresor = 3;
+     var fltPositionZTresor = 12;
 
     function demarrer() {
        var objCanvas = document.getElementById('monCanvas');
@@ -380,25 +380,24 @@
          var camera = objScene3D.camera;
          binMouvement = true;
 
-
-         if (tabKeys[80] && !blnAerien) {    //Vue aérienne
-             blnAerien = true;
-             fltXCamera = getPositionCameraX(camera);
-             fltZCamera = getPositionCameraZ(camera);
-             fltXCibleCamera = getCibleCameraX(camera);
-             fltZCibleCamera = getCibleCameraZ(camera);
-             document.getElementById("info").innerHTML = "cibles x et z : " + fltXCibleCamera + " et : " + fltZCibleCamera;
-             setPositionsCameraXYZ([15.5, 375, 15.5], camera);
-             setCiblesCameraXYZ([15.5, 0, 15.5], camera);
-             setOrientationsXYZ([-1, 0, 0], camera);
+         if (tabKeys[80]) {    //Vue aérienne - Key = P
+             if (!blnAerien) { //Entrée vue aérienne
+               blnAerien = true;
+               fltXCamera = getPositionCameraX(camera);
+               fltZCamera = getPositionCameraZ(camera);
+               fltXCibleCamera = getCibleCameraX(camera);
+               fltZCibleCamera = getCibleCameraZ(camera);
+               setPositionsCameraXYZ([15.5, 375, 15.5], camera);
+               setCiblesCameraXYZ([15.5, 0, 15.5], camera);
+               setOrientationsXYZ([-1, 0, 0], camera);
              }
-         else if (tabKeys[34] && blnAerien) {    //Page down
-             blnAerien = false;
-             setPositionsCameraXYZ([fltXCamera, intHauteur, fltZCamera], camera);
-             setCiblesCameraXYZ([fltXCibleCamera, intHauteur, fltZCibleCamera], camera);
-             console.log("cibles x et z : " + fltXCibleCamera + " et : " + fltZCibleCamera);
-             setOrientationsXYZ([0, 1, 0], camera);
-            }
+             else { //Sortie vue aérienne
+                 blnAerien = false;
+                 setPositionsCameraXYZ([fltXCamera, intHauteur, fltZCamera], camera);
+                 setCiblesCameraXYZ([fltXCibleCamera, intHauteur, fltZCibleCamera], camera);
+                 setOrientationsXYZ([0, 1, 0], camera);
+              }
+         }
          else if (blnAerien == false) {
                  if (tabKeys[32]) {    //Ouvreur de mur
                        console.log("ouvreur de mur");
@@ -436,7 +435,7 @@
 
                      //Pour voir s'il y a collision entre le joueur et un télé-transporteur
 
-                     for (var i =0; i< tabCoordonneesTransporteurs.length;i++){
+                     /*for (var i =0; i< tabCoordonneesTransporteurs.length;i++){
                          if (tabCoordonneesRecepteurs[0].length > 0) {
                              var fltEcartX = fltXCamera - tabCoordonneesTransporteurs[i][0];
                              var fltEcartZ = fltZCamera - tabCoordonneesTransporteurs[i][1];
@@ -447,10 +446,10 @@
                                  objSons.Transportation.play();
                              }
                          }
-                     }
+                     }*/
                      var fltEcartX = fltXCamera - fltPositionXTresor;
                      var fltEcartZ = fltZCamera - fltPositionZTresor;
-                             if (fltEcartX <= 1 && fltEcartX >= -1 && fltEcartZ <= 1 && fltEcartZ >= -1)
+                             if (fltEcartX <= 0.13 && fltEcartX >= -0.13 && fltEcartZ <= 0.13 && fltEcartZ >= -0.13)
                                  gagnerNiveau();
                      // Limites du mur
                      var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur + 0.1;
@@ -498,6 +497,7 @@
                  }
              }
 
+        document.getElementById('info').innerHTML = 'cible X = ' + getCibleCameraX(camera) + ' - cible Z = ' + getCibleCameraZ(camera);
         effacerCanevas(objgl);
         dessiner(objgl, objProgShaders, objScene3D);
 
@@ -533,6 +533,21 @@
         var verifZ = 30 - Math.round(getPositionCameraZ(camera));
         if(tabNiveau[verifX][verifZ] == 1 || tabNiveau[verifX][verifZ] == 3) {
           fltZPrime = 0;
+        }
+      }
+      if(typeof verifX !== 'undefined'){
+        var block = tabNiveau[verifX][verifZ];
+        //document.getElementById('info').innerHTML = block;
+        switch(block){
+          case 4:
+            gagnerNiveau();
+            break;
+          case 5:
+            var fltIndexPotentiel = Math.floor((Math.random() * tabCoordonneesRecepteurs.length));
+            setPositionCameraX(tabCoordonneesRecepteurs[fltIndexPotentiel][0]+ 0.5, camera);
+            setPositionCameraZ(tabCoordonneesRecepteurs[fltIndexPotentiel][1] + 0.5, camera);
+            objSons.Transportation.play();
+            break;
         }
       }
       //document.getElementById("info").innerHTML = "X = " + getPositionCameraX(camera) + " - Z = " + getPositionCameraZ(camera);

@@ -17,23 +17,12 @@ function creerObj3DTresor(objgl, obj3DSol, intNoTexture,positionX,positionZ) {
 
 function creerVertexTresor(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
-    // Face avant (Z=1)
-			  0.0, 0.0, 0.5,   // 0: Centre
-              0.5, 0.5, 0.5,   // 1: Coin haut droit
-              0.5, 0, 0.5,  // 2: Coin bas droit
-             -0.5, 0, 0.5,  // 3: Coin bas gauche
-              -0.5, 0.5, 0.5,  // 4: Coin haut gauche
-
-    // Face arrière (Z=-1) 
-              0.0, 0.0, -0.5,   // 5: Centre
-              0.5, 0.5, -0.5,   // 6: Coin haut droit
-             0.5, 0, -0.5,  // 7: Coin bas droit
-             -0.5, 0, -0.5,  // 8: Coin bas gauche
-              -0.5, 0.5, -0.5,  // 9: Coin haut gauche
-
-              0.0, 0.5, 0.0,      // 10 : Centre du cube en haut
-              0.0, 0.0, 0.0,      // 11: Centre du cube au milieu
-              0.0, -0.5, 0.0,      // 12 : Centre du cube en bas
+          0.0, 0.75, 0.0,
+          0.25, 0.5, 0.0,
+          0.0, 0.5, 0.25,
+          -0.25, 0.5, 0.0,
+          0.0, 0.5, -0.25,
+          0.0, 0.25, 0.0
         ];
 
     var objTresor = objgl.createBuffer();
@@ -45,7 +34,7 @@ function creerVertexTresor(objgl, fltLargeur, fltProfondeur, fltHauteur) {
 
 function creerCouleursTresor(objgl, tabCouleur) {
     tabCouleurs = [];
-    for (var i = 0; i < 16; i++)
+    for (var i = 0; i < 6; i++)
         tabCouleurs = tabCouleurs.concat(tabCouleur);
 
     var objCouleursTresor = objgl.createBuffer();
@@ -55,29 +44,15 @@ function creerCouleursTresor(objgl, tabCouleur) {
 	return objCouleursTresor;
 }
 
-//Fonction inutile, jamais appelée....
+//Fonction inutile, jamais appelï¿½e....
 function creerTexelsTresor(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
     var tabTexels = [
-    // Mur nord
-             0.0, 0.0,
-             fltLargeur, 0.0,
-             0.0, fltHauteur,
-             fltLargeur, fltHauteur,
-    // Mur sud
-			 0.0, 0.0,
-             fltLargeur, 0.0,
-             0.0, fltHauteur,
-             fltLargeur, fltHauteur,
-    // Mur est
-			 0.0, 0.0,
-             fltProfondeur, 0.0,
-             0.0, fltHauteur,
-             fltProfondeur, fltHauteur,
-    // Mur ouest
-			 0.0, 0.0,
-             fltProfondeur, 0.0,
-             0.0, fltHauteur,
-             fltProfondeur, fltHauteur
+          0.0, 0.5,
+          1.0, 0.0,
+          1.0, 1.0,
+          1.0, 0.0,
+          1.0, 1.0,
+          0.0, 0.5
         ];
 
     var objTexelsTresor = objgl.createBuffer();
@@ -91,10 +66,16 @@ function creerTexelsTresor(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTe
 
   function creerMaillageTresor(objgl) {
        var tabMaillage =
-            [10, 2, 3,
-             10, 3, 8,
-             10, 8, 7,
-             10, 7, 2,
+            [
+              0, 1, 2,
+              0, 2, 3,
+              0, 3, 4,
+              0, 4, 1,
+
+              5, 1, 2,
+              5, 2, 3,
+              5, 3, 4,
+              5, 4, 1
             ];
 
 	    var objMaillageTresor = objgl.createBuffer();
@@ -102,7 +83,7 @@ function creerTexelsTresor(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTe
         objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
         // Le nombre de triangles
-        objMaillageTresor.intNbTriangles = 4;
+        objMaillageTresor.intNbTriangles = 8;
         // Le nombre de droites
         objMaillageTresor.intNbDroites = 0;
 
